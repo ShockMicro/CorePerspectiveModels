@@ -9,6 +9,8 @@ uniform float FogStart;
 uniform float FogEnd;
 uniform vec4 FogColor;
 
+in int isGUI;
+in int isHand;
 in float zpos;
 in float vertexDistance;
 in vec4 vertexColor;
@@ -18,27 +20,26 @@ in vec4 normal;
 
 out vec4 fragColor;
 
-bool check_alpha(float textureAlpha, float targetAlpha) {
-	
-	float targetLess = targetAlpha - 0.01;
-	float targetMore = targetAlpha + 0.01;
-	return (textureAlpha > targetLess && textureAlpha < targetMore);
-	
+bool roughly_equal(float num1, float num2, float threshold) {
+    return abs(num1 - num2) <= threshold;
 }
 
 void main() {
     vec4 color = texture(Sampler0, texCoord0) * vertexColor * ColorModulator;
-	float alpha = textureLod(Sampler0, texCoord0, 0.0).a * 255.0; // Take the alpha from the texture's LOD so it doesn't have any issues (this has hurt me before with VDE)
-    if (color.a < 0.1) discard; // This is vanilla, I just shorten it because big
 	
-	if (check_alpha(alpha, 253.0) && vertexDistance < 800) discard; // If it's inside the normal world space, it's always going to want to be the hand texture.
+	float alpha255 = textureLod(Sampler0, texCoord0, 0.0).a * 255.0; // Take the alpha from the texture's LOD so it doesn't have any issues (this has hurt me before with VDE)
+	float alpha100 = textureLod(Sampler0, texCoord0, 0.0).a * 100.0; // Added to make it easier to work with for more image editors
 	
-	if (vertexDistance >= 800) { // If it's in a GUI, figure out if it's the paper doll or an inventory slot.
+    if (color.a < 0.1) discard; // Snipped due to size.
 	
-		if (check_alpha(alpha, 254.0) && zpos < 2.0) discard; // If it's far back enough on the z-axis, it's usually in the paper doll's hand. Max set to 2 because nothing should be bigger than that.
-		else if (check_alpha(alpha, 253.0) && zpos >= 2.0) discard; // If it's close enough on the z-axis, it's usually in an inventory slot.
-		
-	}
+    // updated to 1.19.4 thanks to the der discohund
+
+    // Switch used parts of the texture depending on where the model is displayed
+    if (isGUI == 0 && roughly_equal(alpha, 253.0, 0.01)) discard;
+    if (isGUI == 1) {
+             if (zpos  > 125.0 && roughly_equal(alpha, 254.0, 0.01)) discard;     // Handled as inventory slot
+        else if (zpos <= 125.0 && roughly_equal(alpha, 253.0, 0.01)) discard; // Handled as on the player doll
+    }
 	
     fragColor = linear_fog(color, vertexDistance, FogStart, FogEnd, FogColor);
 }
