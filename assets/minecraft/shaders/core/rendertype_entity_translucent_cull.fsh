@@ -9,8 +9,8 @@ uniform float FogStart;
 uniform float FogEnd;
 uniform vec4 FogColor;
 
-in int isGUI;
-in int isHand;
+flat in int isGUI;
+flat in int isHand;
 in float zpos;
 in float vertexDistance;
 in vec4 vertexColor;
@@ -33,12 +33,13 @@ void main() {
     if (color.a < 0.1) discard; // Snipped due to size.
 	
     // updated to 1.19.4 thanks to the der discohund
+    // updated to 1.20 thanks to HalbFettKaese + Evtema3
 
-    // Switch used parts of the texture depending on where the model is displayed
-    if (isGUI == 0 && roughly_equal(alpha, 253.0, 0.01)) discard;
+    // Switch used parts of the texture depending on where the model is displayed (using alpha255 by default)
+    if (isGUI == 0 && roughly_equal(alpha255, 253.0, 0.01)) discard;
     if (isGUI == 1) {
-             if (zpos  > 125.0 && roughly_equal(alpha, 254.0, 0.01)) discard;     // Handled as inventory slot
-        else if (zpos <= 125.0 && roughly_equal(alpha, 253.0, 0.01)) discard; // Handled as on the player doll
+             if (zpos  > 100.0 && roughly_equal(alpha255, 254.0, 0.01)) discard;     // Handled as inventory slot
+        else if (zpos <= 100.0 && roughly_equal(alpha255, 253.0, 0.01)) discard; // Handled as on the player doll
     }
 	
     fragColor = linear_fog(color, vertexDistance, FogStart, FogEnd, FogColor);
