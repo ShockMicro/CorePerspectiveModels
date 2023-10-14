@@ -22,7 +22,6 @@ uniform vec3 Light0_Direction;
 uniform vec3 Light1_Direction;
 
 flat out int isGUI;
-flat out int isHand;
 
 out float zpos;
 out float vertexDistance;
@@ -32,23 +31,11 @@ out vec2 texCoord1;
 out vec2 texCoord2;
 out vec4 normal;
 
-// updated to 1.19.4 thanks to the der discohund
-
-// gui item model detection from Onnowhere
-bool isgui(mat4 ProjMat) {
-    return ProjMat[3][2] == -2.0;
-}
-// first person hand item model detection from esben
-bool ishand(float FogStart) {
-    return FogStart * 0.000001 > 1;
-}
-
 void main() {
     zpos = Position.z;
     gl_Position = ProjMat * ModelViewMat * vec4(Position, 1.0);
 	
-	isGUI = int(isgui(ProjMat));
-    isHand = int(ishand(FogStart));
+	isGUI = int(ProjMat[3][3] != 0.0);
 
     vertexDistance = fog_distance(ModelViewMat, IViewRotMat * Position, FogShape);
 	vec4 lightColor = vertexDistance <= 800 ? minecraft_sample_lightmap(Sampler2, UV2) : texelFetch(Sampler2, UV2 / 16, 0); // Added this simply for better compat with light-altering packs.
