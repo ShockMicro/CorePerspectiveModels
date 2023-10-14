@@ -26,17 +26,21 @@ bool roughly_equal(float num1, float num2, float threshold) {
 
 void main() {
     vec4 color = texture(Sampler0, texCoord0) * vertexColor * ColorModulator;
-    if (color.a < 0.1) discard; // Snipped due to size.
+    if (color.a < 0.1) discard;
 	
 	int alpha = int(round(textureLod(Sampler0, texCoord0, 0.0).a * 255.0)); // Take the alpha from the texture's LOD so it doesn't have any issues (this has hurt me before with VDE)
 
     // Switch used parts of the texture depending on where the model is displayed
     if(isGUI == 1) {
-        if(alpha == 254 && zpos > 125.0) discard; // Handled as inventory slot
-        if(alpha == 253 && zpos < 125.0) discard; // player doll, so discard the icon
+        if(alpha == 254 && zpos > 100.0) discard; // Handled as inventory slot
+        if(alpha == 253 && zpos < 100.0) discard; // player doll, so discard the icon
     }else{
         if(alpha == 253) discard; // discard the icon outside of gui
     }
+
+    // Remap alpha
+    if(alpha >= 253)
+        color.a = 1.0;
 	
     fragColor = linear_fog(color, vertexDistance, FogStart, FogEnd, FogColor);
 }
