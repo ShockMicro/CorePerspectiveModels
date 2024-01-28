@@ -33,10 +33,11 @@ out vec2 texCoord2;
 out vec4 normal;
 
 // updated to 1.19.4 thanks to the der discohund
+// updated to 1.20 thanks to HalbFettKaese + Evtema3
 
 // gui item model detection from Onnowhere
 bool isgui(mat4 ProjMat) {
-    return ProjMat[3][2] == -2.0;
+    return abs(ProjMat[3][3]) > 0.01;
 }
 // first person hand item model detection from esben
 bool ishand(float FogStart) {
