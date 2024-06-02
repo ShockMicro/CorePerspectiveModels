@@ -1,6 +1,6 @@
 {
    "pack": {
-      "pack_format": 18,
+      "pack_format": 32,
       "description": "Adds a way to have different items in the hand and the GUI."
    }
 }

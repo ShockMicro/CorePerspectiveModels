@@ -20,15 +20,11 @@ in vec4 normal;
 
 out vec4 fragColor;
 
-bool roughly_equal(float num1, float num2, float threshold) {
-    return abs(num1 - num2) <= threshold;
-}
-
 void main() {
     vec4 color = texture(Sampler0, texCoord0) * vertexColor * ColorModulator;
     if (color.a < 0.1) discard;
 	
-	int alpha = int(round(textureLod(Sampler0, texCoord0, 0.0).a * 255.0)); // Take the alpha from the texture's LOD so it doesn't have any issues (this has hurt me before with VDE)
+	int alpha = int(textureLod(Sampler0, texCoord0, 0.0).a * 255.5); // Take the alpha from the texture's LOD so it doesn't have any issues (this has hurt me before with VDE)
 
     // Switch used parts of the texture depending on where the model is displayed
     if(isGUI == 1) {
