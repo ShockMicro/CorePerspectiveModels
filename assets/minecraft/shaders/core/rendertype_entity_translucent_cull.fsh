@@ -10,7 +10,6 @@ uniform float FogEnd;
 uniform vec4 FogColor;
 
 flat in int isGUI;
-in int isHand;
 in float zpos;
 in float vertexDistance;
 in vec4 vertexColor;
